@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Checkout
@@ -18,10 +18,13 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Install SDK 34
+      - name: Configure Android SDK
         run: |
-          yes | sdkmanager --licenses || true
-          sdkmanager "platforms;android-34" "build-tools;34.0.0"
+          echo "ANDROID_HOME=$ANDROID_SDK_ROOT" >> "$GITHUB_ENV"
+          SDKMANAGER="$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager"
+          "$SDKMANAGER" --version
+          "$SDKMANAGER" --licenses < /dev/null || true
+          "$SDKMANAGER" "platforms;android-34" "build-tools;34.0.0"
 
       - name: Build Weather
         working-directory: addons/weather
